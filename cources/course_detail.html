@@ -1,0 +1,15 @@
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<p>Создан: {{ course.created_at }}</p>
+
+<h2>Документы курса:</h2>
+<ul>
+  {% for document in course.documents.all %}
+    <li>
+      <a href="{{ document.file.url }}" target="_blank">{{ document.title }}</a>
+      (загружен {{ document.uploaded_at }})
+    </li>
+  {% empty %}
+    <li>Документов пока нет</li>
+  {% endfor %}
+</ul>
