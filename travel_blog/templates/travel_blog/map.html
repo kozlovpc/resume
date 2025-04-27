@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Blog Map</title>
+    <style>
+        /* Существующие стили */
+        .game-container {
+            position: relative;
+            max-width: 1000px;
+            margin: auto;
+        }
+        #game-map {
+            width: 100%;
+            height: auto;
+        }
+        .point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            z-index: 1000;
+        }
+        
+        /* Новые стили для фотогалереи */
+        .gallery-section {
+            padding: 50px 20px;
+            background: #f8f9fa;
+            margin-top: 40px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .photo-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .photo-description {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+        }
+        
+        .photo-description h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        
+        .photo-description p {
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Существующая разметка -->
+    <h1 align="center" class="section-title">Блог о путешествиях</h1>
+    <!--<p>Двигайте мышью и остановите её. Координаты появятся ниже.</p>-->
+    <!--<div id="coordinates"></div>-->
+    <div class="game-container">
+        <img src="{% static 'images/world_map.gif' %}" id="game-map">
+        {% for point in points %}
+            <div class="point" 
+                 style="left: {{ point.x }}%; top: {{ point.y }}%;"
+                 data-video="{{ point.video_url }}"
+                 onclick="showVideo('{{ point.video_url }}')"></div>
+        {% endfor %}
+    </div>
+
+    <!-- Новая секция с фотогалереей -->
+    <section class="gallery-section">
+        <h2 class="section-title">Последние Путешествия</h2>
+        <div class="photo-grid">
+            <div class="photo-card">
+                <img src="{% static 'images/italy.jpg' %}" alt="Италия">
+                <div class="photo-description">
+                    <h3>Рим, Италия</h3>
+                    <p>Знакомство с древним Колизеем и вкуснейшей итальянской кухней</p>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="{% static 'images/japan.jpg' %}" alt="Япония">
+                <div class="photo-description">
+                    <h3>Токио, Япония</h3>
+                    <p>Цветение сакуры в парке Уэно и современные небоскребы</p>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="{% static 'images/brazil.jpg' %}" alt="Бразилия">
+                <div class="photo-description">
+                    <h3>Рио-де-Жанейро</h3>
+                    <p>Вид на статую Христа-Искупителя и пляжи Копакабаны</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Еще одна секция -->
+    <section class="gallery-section" style="background: #e8f4f8;">
+        <h2 class="section-title">Популярные Направления</h2>
+        <div class="photo-grid">
+            <div class="photo-card">
+                <img src="{% static 'images/paris.jpg' %}" alt="Париж">
+                <div class="photo-description">
+                    <h3>Париж, Франция</h3>
+                    <p>Эйфелева башня и прогулки по Монмартру</p>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="{% static 'images/egypt.jpg' %}" alt="Египет">
+                <div class="photo-description">
+                    <h3>Пирамиды Гизы</h3>
+                    <p>Загадки древнего Египта и путешествие по Нилу</p>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="{% static 'images/australia.jpg' %}" alt="Австралия">
+                <div class="photo-description">
+                    <h3>Сидней</h3>
+                    <p>Оперный театр и дайвинг у Большого Барьерного рифа</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно -->
+    <div id="videoModal" class="modal">
+        <iframe width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+        <button onclick="closeModal()">Close</button>
+    </div>
+
+    <script>
+        // Существующий JavaScript код
+        function showVideo(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const iframe = modal.querySelector('iframe');
+            iframe.src = videoUrl.replace('watch?v=', 'embed/');
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            modal.style.display = 'none';
+            modal.querySelector('iframe').src = '';
+        }
+        
+        let timer;
+        const coordsDiv = document.getElementById('coordinates');
+    
+        document.addEventListener('mousemove', (event) => {
+            const x = event.clientX;
+            const y = event.clientY;
+            
+            if (timer) clearTimeout(timer);
+            
+            timer = setTimeout(() => {
+                coordsDiv.textContent = `Мышь остановилась на X: ${x}, Y: ${y}`;
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
